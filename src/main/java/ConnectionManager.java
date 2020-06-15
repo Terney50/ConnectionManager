@@ -96,7 +96,7 @@ public class ConnectionManager {
     }
 
     /**
-     * Create a connection for the pool
+     * Create a connection for the pool.
      *
      * @return the new created connection
      * @throws SQLException
@@ -163,7 +163,7 @@ public class ConnectionManager {
     }
 
     /**
-     * By running a sql to verify if the connection is available
+     * By running a sql to verify if the connection is available.
      *
      * @param conn
      *            The connection for verification
@@ -180,10 +180,17 @@ public class ConnectionManager {
 
     // Just an Example
     public static void main(String[] args) throws SQLException {
+
         Connection conn = null;
+
         ConnectionManager pool = new ConnectionManager (
-                "jdbc:mysql://localhost:3306/mysql?serverTimezone=CET",
+                "jdbc:mysql://localhost:3306,localhost:3307/mysql?" +
+                        "serverTimezone=CET" +
+                        "&autoReconnect=true" +
+                        "&connectTimeout=3000" +
+                        "&autoReconnectForPools=true",
                 "root", "Passw0rd", 2);
+
         try {
             conn = pool.getConnection();
             try (Statement statement = conn.createStatement())
