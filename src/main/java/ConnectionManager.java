@@ -18,18 +18,6 @@ public class ConnectionManager {
     Stack<Connection> freePool = new Stack<>();
     Set<Connection> occupiedPool = new HashSet<>();
 
-    /**
-     * Constructor
-     *
-     * @param databaseUrl
-     *            The connection url
-     * @param userName
-     *            user name
-     * @param password
-     *            password
-     * @param maxSize
-     *            max size of the connection pool
-     */
     public ConnectionManager(String databaseUrl, String userName, String password, int maxSize) {
         this.databaseUrl = databaseUrl;
         this.userName = userName;
@@ -37,13 +25,7 @@ public class ConnectionManager {
         this.maxPoolSize = maxSize;
     }
 
-    /**
-     * Get an available connection
-     *
-     * @return An available connection
-     * @throws SQLException
-     *             Fail to get an available connection
-     */
+    // Get an available connection
     public synchronized Connection getConnection() throws SQLException {
         Connection conn = null;
 
@@ -67,15 +49,7 @@ public class ConnectionManager {
         return conn;
     }
 
-    /**
-     * Return a connection to the pool
-     *
-     * @param conn
-     *            The connection
-     * @throws SQLException
-     *             When the connection is returned already or it isn't gotten
-     *             from the pool.
-     */
+    // Return a connection to the pool
     public synchronized void returnConnection (Connection conn) throws SQLException {
         if (conn == null) {
             throw new NullPointerException();
@@ -86,22 +60,12 @@ public class ConnectionManager {
         freePool.push(conn);
     }
 
-    /**
-     * Verify if the connection is full.
-     *
-     * @return if the connection is full
-     */
+    // Verify if the connection is full
     private synchronized boolean isFull() {
         return ((freePool.size() == 0) && (connNum >= maxPoolSize));
     }
 
-    /**
-     * Create a connection for the pool.
-     *
-     * @return the new created connection
-     * @throws SQLException
-     *             When fail to create a new connection.
-     */
+    // Create a connection for the pool
     private Connection createNewConnectionForPool() throws SQLException {
         Connection conn = createNewConnection();
         connNum++;
@@ -109,25 +73,14 @@ public class ConnectionManager {
         return conn;
     }
 
-    /**
-     * Crate a new connection
-     *
-     * @return the new created connection
-     * @throws SQLException
-     *             When fail to create a new connection.
-     */
+    // Crate a new connection
     private Connection createNewConnection() throws SQLException {
         Connection conn = null;
         conn = DriverManager.getConnection(databaseUrl, userName, password);
         return conn;
     }
 
-    /**
-     * Get a connection from the pool. If there is no free connection, return
-     * null
-     *
-     * @return the connection.
-     */
+    // Get a connection from the pool. If there is no free connection, return null
     private Connection getConnectionFromPool() {
         Connection conn = null;
         if (freePool.size() > 0) {
@@ -137,15 +90,7 @@ public class ConnectionManager {
         return conn;
     }
 
-    /**
-     * Make sure the connection is available now. Otherwise, reconnect it.
-     *
-     * @param conn
-     *            The connection for verification.
-     * @return the available connection.
-     * @throws SQLException
-     *             Fail to get an available connection
-     */
+    // Check, if the connection is available now. Otherwise, reconnect it
     private Connection makeAvailable(Connection conn) throws SQLException {
         if (isConnectionAvailable(conn)) {
             return conn;
@@ -162,13 +107,7 @@ public class ConnectionManager {
         return conn;
     }
 
-    /**
-     * By running a sql to verify if the connection is available.
-     *
-     * @param conn
-     *            The connection for verification
-     * @return if the connection is available for now.
-     */
+    // By running a sql to verify if the connection is available
     private boolean isConnectionAvailable(Connection conn) {
         try (Statement st = conn.createStatement()) {
             st.executeQuery(SQL_VERIFYCONN);
